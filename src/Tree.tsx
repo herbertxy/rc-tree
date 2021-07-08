@@ -394,11 +394,17 @@ class Tree extends React.Component<TreeProps, TreeState> {
   };
 
   onNodeDragOver = (event, node) => {
-    const { dragNodesKeys } = this.state;
+    const { dragNodesKeys,expandedKeys } = this.state;
     const { onDragOver } = this.props;
-    const { eventKey } = node.props;
+    const { eventKey,children } = node.props;
 
-    if (dragNodesKeys.indexOf(eventKey) !== -1) {
+    this.dragNode = node
+
+    this.setState({
+      dragNodesKeys: getDragNodesKeys(children, node),
+    })
+
+    if (dragNodesKeys.indexOf(eventKey) !== -1 && getDragNodesKeys(children, node).indexOf(eventKey) !== -1) {
       return;
     }
 
