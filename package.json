@@ -64,6 +64,10 @@
   },
   "dependencies": {
     "@ant-design/create-react-context": "^0.2.4",
+    "@babel/cli": "^7.14.5",
+    "@babel/preset-env": "^7.14.7",
+    "@babel/preset-react": "^7.14.5",
+    "@babel/preset-typescript": "^7.14.5",
     "classnames": "2.x",
     "prop-types": "^15.5.8",
     "rc-animate": "^2.6.0",

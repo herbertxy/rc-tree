@@ -344,9 +344,15 @@ class Tree extends React.Component<TreeProps, TreeState> {
   onNodeDragEnter = (event, node) => {
     const { expandedKeys, dragNodesKeys } = this.state;
     const { onDragEnter } = this.props;
-    const { pos, eventKey } = node.props;
+    const { pos, eventKey, children } = node.props;
 
-    if (!this.dragNode || dragNodesKeys.indexOf(eventKey) !== -1) return;
+    this.dragNode = node;
+
+    this.setState({
+      dragNodesKeys: getDragNodesKeys(children, node),
+    });
+
+    if (!this.dragNode ||  getDragNodesKeys(children, node).indexOf(eventKey) !== -1) return;
 
     const dropPosition = calcDropPosition(event, node);
 
