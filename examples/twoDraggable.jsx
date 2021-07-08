@@ -128,7 +128,8 @@ class Demo extends React.Component {
             onDragStart={this.onDragStart}
             onDragEnter={this.onDragEnter}
             onDrop={this.onDrop}
-            outSider={this.props.outSider.current !== this.props.keyName}
+            isOutsider={this.props.outSider.current !== this.props.keyName}
+            allowOutsider
           >
             {loop(this.state.gData)}
           </Tree>

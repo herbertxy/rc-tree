@@ -37,7 +37,8 @@ interface CheckInfo {
 }
 
 export interface TreeProps {
-  outSider?: boolean;
+  isOutsider?: boolean;
+  allowOutsider?: boolean;
   prefixCls: string;
   className?: string;
   style?: React.CSSProperties;
@@ -344,11 +345,11 @@ class Tree extends React.Component<TreeProps, TreeState> {
    */
   onNodeDragEnter = (event, node) => {
     const { expandedKeys, dragNodesKeys } = this.state;
-    const { onDragEnter, outSider } = this.props;
+    const { onDragEnter, isOutsider, allowOutsider } = this.props;
     const { pos, eventKey } = node.props;
 
-    if(outSider){
-      console.log(outSider,'outsider---------enter--------')
+    if(isOutsider&&allowOutsider){
+      console.log(isOutsider,'outsider---------enter--------')
       this.dragNode = node
     }
 
@@ -356,11 +357,6 @@ class Tree extends React.Component<TreeProps, TreeState> {
 
     const dropPosition = calcDropPosition(event, node);
 
-    // if(outSider){
-    //   console.log('before')
-    //   this.dragNode = null
-    //   return 
-    // }
     // Skip if drag node is self
     if (this.dragNode.props.eventKey === eventKey && dropPosition === 0) {
       this.setState({
@@ -406,11 +402,10 @@ class Tree extends React.Component<TreeProps, TreeState> {
 
   onNodeDragOver = (event, node) => {
     const { dragNodesKeys } = this.state;
-    const { onDragOver } = this.props;
+    const { onDragOver, isOutsider, allowOutsider } = this.props;
     const { eventKey } = node.props;
 
-    if(this.props.outSider){
-      console.log('outer sider over-----')
+    if(allowOutsider && isOutsider){
      this.dragNode = node
     }
     if (dragNodesKeys.indexOf(eventKey) !== -1) {
