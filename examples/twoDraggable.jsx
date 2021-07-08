@@ -13,18 +13,18 @@ class Demo extends React.Component {
     expandedKeys: ['0-0-key', '0-0-0-key', '0-0-0-0-key'],
   };
 
-  onDragStart = info => {
+  onDragStart = (info) => {
     console.log('start', info);
   };
 
-  onDragEnter = info => {
+  onDragEnter = (info) => {
     console.log('enter', info);
     this.setState({
       expandedKeys: info.expandedKeys,
     });
   };
 
-  onDrop = info => {
+  onDrop = (info) => {
     console.log('drop', info);
     const dropKey = info.node.props.eventKey;
     const dragKey = info.dragNode.props.eventKey;
@@ -53,7 +53,7 @@ class Demo extends React.Component {
 
     if (!info.dropToGap) {
       // Drop on the content
-      loop(data, dropKey, item => {
+      loop(data, dropKey, (item) => {
         item.children = item.children || [];
         // where to insert 示例添加到尾部，可以是随意位置
         item.children.push(dragObj);
@@ -63,7 +63,7 @@ class Demo extends React.Component {
       info.node.props.expanded && // Is expanded
       dropPosition === 1 // On the bottom gap
     ) {
-      loop(data, dropKey, item => {
+      loop(data, dropKey, (item) => {
         item.children = item.children || [];
         // where to insert 示例添加到尾部，可以是随意位置
         item.children.unshift(dragObj);
@@ -88,7 +88,7 @@ class Demo extends React.Component {
     });
   };
 
-  onExpand = expandedKeys => {
+  onExpand = (expandedKeys) => {
     console.log('onExpand', expandedKeys);
     this.setState({
       expandedKeys,
@@ -97,8 +97,8 @@ class Demo extends React.Component {
   };
 
   render() {
-    const loop = data =>
-      data.map(item => {
+    const loop = (data) =>
+      data.map((item) => {
         if (item.children && item.children.length) {
           return (
             <TreeNode key={item.key} title={item.title}>
@@ -130,18 +130,16 @@ class Demo extends React.Component {
   }
 }
 
-function Index(){
-
+function Index() {
   const TreeContext = createReactContext();
 
   return (
-    <div >
-      <div style={{marginRight: 20}}>
+    <div>
+      <div style={{ marginRight: 20 }}>
+        <Demo />
+      </div>
       <Demo />
     </div>
-    <Demo/>
-    </div>
-    
-  )
+  );
 }
 export default Index;
