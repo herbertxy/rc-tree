@@ -347,16 +347,20 @@ class Tree extends React.Component<TreeProps, TreeState> {
     const { onDragEnter, outSider } = this.props;
     const { pos, eventKey } = node.props;
 
-    this.dragNode = node
+    if(outSider){
+      console.log(outSider,'outsider---------enter--------')
+      this.dragNode = node
+    }
+
     if (!this.dragNode || dragNodesKeys.indexOf(eventKey) !== -1) return;
 
     const dropPosition = calcDropPosition(event, node);
 
-    if(outSider){
-      console.log('before')
-      this.dragNode = null
-      return 
-    }
+    // if(outSider){
+    //   console.log('before')
+    //   this.dragNode = null
+    //   return 
+    // }
     // Skip if drag node is self
     if (this.dragNode.props.eventKey === eventKey && dropPosition === 0) {
       this.setState({
@@ -404,7 +408,11 @@ class Tree extends React.Component<TreeProps, TreeState> {
     const { dragNodesKeys } = this.state;
     const { onDragOver } = this.props;
     const { eventKey } = node.props;
-    // this.dragNode = node
+
+    if(this.props.outSider){
+      console.log('outer sider over-----')
+     this.dragNode = node
+    }
     if (dragNodesKeys.indexOf(eventKey) !== -1) {
       return;
     }

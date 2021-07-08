@@ -1,5 +1,5 @@
 /* eslint-disable no-console, react/no-access-state-in-setstate */
-import React ,{useState}from 'react';
+import React ,{useState,useRef}from 'react';
 import { gData } from './utils/dataUtil';
 import './draggable.less';
 import '../assets/index.less';
@@ -20,6 +20,8 @@ class Demo extends React.Component {
 
   onDragEnter = (info) => {
     console.log('enter', info);
+    console.log(this.props.keyName,this.props.outSider.current)
+
     // return 
     this.setState({
       expandedKeys: info.expandedKeys,
@@ -32,7 +34,7 @@ class Demo extends React.Component {
     const dragKey = info.dragNode.props.eventKey;
     const dropPos = info.node.props.pos.split('-');
     const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
-    if(this.props.outSider){
+    if(this.props.outSider.current !== this.props.keyName){
       return 
     }
     const loop = (data, key, callback) => {
@@ -101,6 +103,7 @@ class Demo extends React.Component {
   };
 
   render() {
+    console.log(this.props.outSider,'props outsider')
     const loop = (data) =>
       data.map((item) => {
         if (item.children && item.children.length) {
@@ -125,6 +128,7 @@ class Demo extends React.Component {
             onDragStart={this.onDragStart}
             onDragEnter={this.onDragEnter}
             onDrop={this.onDrop}
+            outSider={this.props.outSider.current !== this.props.keyName}
           >
             {loop(this.state.gData)}
           </Tree>
@@ -135,16 +139,20 @@ class Demo extends React.Component {
 }
 
 function Index() {
-  const TreeContext = createReactContext();
-  const [Drag1, setDrag1] = useState(0)
+  const dragRef = useRef(0)
+  const [dragName,setDragName] = useState(0)
   return (
     <div>
       <div style={{ marginRight: 20 }}>
-        <Demo outSider={Drag1 !== 1} listenStart = {()=>{
-          setDrag1(1)
+        <Demo outSider={dragRef} keyName={1} listenStart = {()=>{
+          dragRef.current = 1
+          setDragName(1) // 触发一下更新
         }}/>
       </div>
-      <Demo outSider={Drag1 !==2} listenStart={()=>{setDrag1(2)}}  />
+      <Demo outSider={dragRef} keyName={2} listenStart={ ()=>{dragRef.current = 2
+          setDragName(2) // 触发一下更新
+      }
+    }  />
     </div>
   );
 }
