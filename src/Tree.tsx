@@ -37,6 +37,7 @@ interface CheckInfo {
 }
 
 export interface TreeProps {
+  outSider?: boolean;
   prefixCls: string;
   className?: string;
   style?: React.CSSProperties;
@@ -59,7 +60,7 @@ export interface TreeProps {
   defaultExpandedKeys?: Key[];
   expandedKeys?: Key[];
   defaultCheckedKeys?: Key[];
-  checkedKeys: Key[] | { checked: Key[]; halfChecked: Key[] };
+  checkedKeys: (Key)[] | { checked: (Key)[]; halfChecked: Key[] };
   defaultSelectedKeys: Key[];
   selectedKeys: Key[];
   onClick: (e: React.MouseEvent, treeNode: DataNode) => void;
@@ -343,19 +344,19 @@ class Tree extends React.Component<TreeProps, TreeState> {
    */
   onNodeDragEnter = (event, node) => {
     const { expandedKeys, dragNodesKeys } = this.state;
-    const { onDragEnter } = this.props;
-    const { pos, eventKey, children } = node.props;
+    const { onDragEnter, outSider } = this.props;
+    const { pos, eventKey } = node.props;
 
-    this.dragNode = node;
-
-    this.setState({
-      dragNodesKeys: getDragNodesKeys(children, node),
-    });
-
-    if (!this.dragNode ||  getDragNodesKeys(children, node).indexOf(eventKey) !== -1) return;
+    this.dragNode = node
+    if (!this.dragNode || dragNodesKeys.indexOf(eventKey) !== -1) return;
 
     const dropPosition = calcDropPosition(event, node);
 
+    if(outSider){
+      console.log('before')
+      this.dragNode = null
+      return 
+    }
     // Skip if drag node is self
     if (this.dragNode.props.eventKey === eventKey && dropPosition === 0) {
       this.setState({
@@ -381,7 +382,7 @@ class Tree extends React.Component<TreeProps, TreeState> {
       if (!this.delayedDragEnterLogic) {
         this.delayedDragEnterLogic = {};
       }
-      Object.keys(this.delayedDragEnterLogic).forEach((key) => {
+      Object.keys(this.delayedDragEnterLogic).forEach(key => {
         clearTimeout(this.delayedDragEnterLogic[key]);
       });
       this.delayedDragEnterLogic[pos] = window.setTimeout(() => {
@@ -400,20 +401,11 @@ class Tree extends React.Component<TreeProps, TreeState> {
   };
 
   onNodeDragOver = (event, node) => {
-    const { dragNodesKeys, expandedKeys } = this.state;
+    const { dragNodesKeys } = this.state;
     const { onDragOver } = this.props;
-    const { eventKey, children } = node.props;
-
-    this.dragNode = node;
-
-    this.setState({
-      dragNodesKeys: getDragNodesKeys(children, node),
-    });
-
-    if (
-      dragNodesKeys.indexOf(eventKey) !== -1 &&
-      getDragNodesKeys(children, node).indexOf(eventKey) !== -1
-    ) {
+    const { eventKey } = node.props;
+    // this.dragNode = node
+    if (dragNodesKeys.indexOf(eventKey) !== -1) {
       return;
     }
 
@@ -525,13 +517,13 @@ class Tree extends React.Component<TreeProps, TreeState> {
 
     // [Legacy] Not found related usage in doc or upper libs
     const selectedNodes = selectedKeys
-      .map((key) => {
+      .map(key => {
         const entity = keyEntities[key];
         if (!entity) return null;
 
         return entity.node;
       })
-      .filter((node) => node);
+      .filter(node => node);
 
     this.setUncontrolledState({ selectedKeys });
 
@@ -574,9 +566,9 @@ class Tree extends React.Component<TreeProps, TreeState> {
       checkedObj = { checked: checkedKeys, halfChecked: halfCheckedKeys };
 
       eventObj.checkedNodes = checkedKeys
-        .map((key) => keyEntities[key])
-        .filter((entity) => entity)
-        .map((entity) => entity.node);
+        .map(key => keyEntities[key])
+        .filter(entity => entity)
+        .map(entity => entity.node);
 
       this.setUncontrolledState({ checkedKeys });
     } else {
@@ -592,7 +584,7 @@ class Tree extends React.Component<TreeProps, TreeState> {
       eventObj.checkedNodesPositions = [];
       eventObj.halfCheckedKeys = halfCheckedKeys;
 
-      checkedKeys.forEach((key) => {
+      checkedKeys.forEach(key => {
         const entity = keyEntities[key];
         if (!entity) return;
 
@@ -613,8 +605,8 @@ class Tree extends React.Component<TreeProps, TreeState> {
     }
   };
 
-  onNodeLoad = (treeNode) =>
-    new Promise((resolve) => {
+  onNodeLoad = treeNode =>
+    new Promise(resolve => {
       // We need to get the latest state of loading/loaded keys
       this.setState(({ loadedKeys = [], loadingKeys = [] }) => {
         const { loadData, onLoad } = this.props;
@@ -730,11 +722,11 @@ class Tree extends React.Component<TreeProps, TreeState> {
   /**
    * Only update the value which is not in props
    */
-  setUncontrolledState = (state) => {
+  setUncontrolledState = state => {
     let needSync = false;
     const newState = {};
 
-    Object.keys(state).forEach((name) => {
+    Object.keys(state).forEach(name => {
       if (name in this.props) return;
 
       needSync = true;
@@ -754,7 +746,7 @@ class Tree extends React.Component<TreeProps, TreeState> {
     }
   };
 
-  isKeyChecked = (key) => {
+  isKeyChecked = key => {
     const { checkedKeys = [] } = this.state;
     return checkedKeys.indexOf(key) !== -1;
   };

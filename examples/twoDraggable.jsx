@@ -1,5 +1,5 @@
 /* eslint-disable no-console, react/no-access-state-in-setstate */
-import React from 'react';
+import React ,{useState}from 'react';
 import { gData } from './utils/dataUtil';
 import './draggable.less';
 import '../assets/index.less';
@@ -14,11 +14,13 @@ class Demo extends React.Component {
   };
 
   onDragStart = (info) => {
+    this.props.listenStart()
     console.log('start', info);
   };
 
   onDragEnter = (info) => {
     console.log('enter', info);
+    // return 
     this.setState({
       expandedKeys: info.expandedKeys,
     });
@@ -30,7 +32,9 @@ class Demo extends React.Component {
     const dragKey = info.dragNode.props.eventKey;
     const dropPos = info.node.props.pos.split('-');
     const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
-
+    if(this.props.outSider){
+      return 
+    }
     const loop = (data, key, callback) => {
       data.forEach((item, index, arr) => {
         if (item.key === key) {
@@ -132,13 +136,15 @@ class Demo extends React.Component {
 
 function Index() {
   const TreeContext = createReactContext();
-
+  const [Drag1, setDrag1] = useState(0)
   return (
     <div>
       <div style={{ marginRight: 20 }}>
-        <Demo />
+        <Demo outSider={Drag1 !== 1} listenStart = {()=>{
+          setDrag1(1)
+        }}/>
       </div>
-      <Demo />
+      <Demo outSider={Drag1 !==2} listenStart={()=>{setDrag1(2)}}  />
     </div>
   );
 }
